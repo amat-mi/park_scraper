@@ -63,8 +63,8 @@ while True:
             park['webstamp'] = webstampstr      #must set them here, because if wrote to the file, they'll make        
             park['nowstamp'] = nowstampstr      #a false positive for a change of data with previous iteration            
             print park
-            r = requests.put("http://127.0.0.1:8000/rtpark/parkdata/upload/", json=park)
-#             r = requests.put("http://dati.amat-mi.it/rtpark/parkdata/upload/", json=park)
+#             r = requests.put("http://127.0.0.1:8000/park/parkdata/upload/", json=park)
+            r = requests.put("https://dati.amat-mi.it/park/parkdata/upload/", json=park)
             print r.text
             
     print    
