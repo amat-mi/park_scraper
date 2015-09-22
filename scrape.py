@@ -8,7 +8,7 @@ from datetime import datetime
 import pytz
 from bs4 import BeautifulSoup
 
-def run():
+def run(wantfile=False,wantrest=True):
     pattern = re.compile('[Uu]ltimo\W+[Aa]ggiornamento\W*\:*\W*([0-9]{2}\/[0-9]{2}/[0-9]{4}\W[0-9]{2}[^0-9]{1}[0-9]{2}[^0-9]{1}[0-9]{2})')
     cet_timezone = pytz.timezone('CET')      #timezone locale (CET for CEnTral Europe)
     with requests.Session() as session:
@@ -57,17 +57,19 @@ def run():
                     with open('parklast.json','w') as f:
                         f.write(current)
                     #se richiesto scrive i dati correnti anche in un file con l'istante attuale (nel timezone locale) nel nome
-                    timestr = naivenow.strftime("%Y%m%d-%H%M%S")
-                    with open('park_{}.json'.format(timestr),'w') as f:
-                        f.write(current)
-                    #se richiesto invia i dati di ogni parcheggio come una separata PUT in formato JSON 
-                    for park in parks:
-                        park['webstamp'] = webstampstr      #must set them here, because if wrote to the file, they'll make        
-                        park['nowstamp'] = nowstampstr      #a false positive for a change of data with previous iteration            
-                        print park
-            #             r = requests.put("http://127.0.0.1:8000/park/parkdata/upload/", json=park)
-                        r = requests.put("https://dati.amat-mi.it/park/parkdata/upload/", json=park)
-                        print r.text
+                    if wantfile:
+                        timestr = naivenow.strftime("%Y%m%d-%H%M%S")
+                        with open('park_{}.json'.format(timestr),'w') as f:
+                            f.write(current)
+                    #se richiesto invia i dati di ogni parcheggio come una separata PUT in formato JSON
+                    if wantrest: 
+                        for park in parks:
+                            park['webstamp'] = webstampstr      #must set them here, because if wrote to the file, they'll make        
+                            park['nowstamp'] = nowstampstr      #a false positive for a change of data with previous iteration            
+                            print park
+                #             r = requests.put("http://127.0.0.1:8000/park/parkdata/upload/", json=park)
+                            r = requests.put("https://dati.amat-mi.it/park/parkdata/upload/", json=park)
+                            print r.text
             except Exception, exc:
                 print str(exc)
                 
